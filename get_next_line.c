@@ -6,7 +6,7 @@
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:12:35 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/26 18:33:22 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/26 21:14:43 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ char	*ft_strjoin(char *s1, char *s2)
 
 	i = 0;
 	parse_index = 0;
+	if (!s2)
+		return (s1);
 	joined = malloc (sizeof(char) * ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!joined)
 		return (NULL);
@@ -101,7 +103,9 @@ char	*store_next(char *buff)
 
 	i = 0;
 	new_i = 0;
-	while (buff[i] != '\n' && buff)
+	if (!buff)
+		return (NULL);
+	while (buff[i] != '\n' && buff[i])
 		i++;
 	new_start = malloc(sizeof(char) * (ft_strlen(buff) - i) + 1);
 	if (!new_start)
@@ -116,6 +120,32 @@ char	*store_next(char *buff)
 	return (new_start);
 }
 
+char	*join_offset(char *offset)
+{
+	int		i;
+	int		join_i;
+	char	*join_start;
+	
+	i = 1;
+	join_i = 0;
+	while (offset[i] != '\n' && offset[i])
+		i++;
+	join_start = malloc(sizeof(char) * (i - 1) + 1);
+	if (!join_start)
+		return (NULL);
+	i = 1;
+	while (offset[i] != '\n' && offset[i])
+	{
+		join_start[join_i] = offset[i];
+		join_i++;
+		i++;
+	}
+	if (offset[i] == '\n')
+		join_start[join_i++] = '\n';
+	join_start[join_i] = '\0';
+	return (join_start);
+}
+
 char	*make_line(int fd, char *new_line, char **next_start)
 {
 	int		status;
@@ -126,11 +156,6 @@ char	*make_line(int fd, char *new_line, char **next_start)
 	buff = malloc(sizeof(char) * BUFFER_SIZE + 1);
 	if (!buff)
 		return (NULL);
-	if (next_start)
-	{
-		new_line = ft_strjoin(new_line, *next_start);
-		free(*next_start);
-	}
 	status = read(fd, buff, BUFFER_SIZE); 
 	if (status == -1)
 	{
@@ -138,6 +163,12 @@ char	*make_line(int fd, char *new_line, char **next_start)
 		return (NULL);
 	}
 	buff_len = ft_strlen(buff);
+	if(ft_strlen(new_line) > 0)
+	{
+		*next_start = store_next(buff);
+		free(buff);
+		return (new_line);
+	}
 	while (!find_eol(buff, BUFFER_SIZE))
 	{
 		new_line = ft_strjoin(new_line, buff);
@@ -166,9 +197,8 @@ char	*get_next_line(int fd)
 	new_line = malloc(sizeof(char) * BUFFER_SIZE + 1);
 	if (!new_line)
 		return (NULL);
-	new_line = NULL;
 	if (next_start != NULL)
-		new_line = ft_strjoin(new_line, next_start);
+		new_line = join_offset(next_start);
 	new_line = make_line(fd, new_line, &next_start); 
 	if (!new_line)
 		return (NULL);
@@ -184,6 +214,8 @@ int	main(int argc, char *argv[])
 	int	fd;
 
 	fd = open(argv[1], O_RDONLY);
+	get_next_line(fd);
+	get_next_line(fd);
 	get_next_line(fd);
 	get_next_line(fd);
 	return 0;

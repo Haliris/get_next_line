@@ -6,7 +6,7 @@
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:11:27 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/26 18:29:34 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/26 19:16:22 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef GET_NEXT_LINE_H
@@ -21,4 +21,5 @@ int		ft_strlen(char *str);
 int		find_eol(char *str, int len);
 char	*store_next(char *buff);
 void	ft_putchar(char c);
+char	*join_offset(char *offset);
 #endif
