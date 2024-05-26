@@ -6,7 +6,7 @@
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:11:27 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/26 17:13:36 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/26 18:29:34 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef GET_NEXT_LINE_H
@@ -14,7 +14,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 char	*get_next_line(int fd);
-char	*make_line(int fd, char *new_line, char *next_start);
+char	*make_line(int fd, char *new_line, char **next_start);
 void	ft_putstr(char *str);
 char	*ft_strjoin(char *s1, char *s2);
 int		ft_strlen(char *str);

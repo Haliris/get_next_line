@@ -6,7 +6,7 @@
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:12:35 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/26 17:19:17 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/26 18:33:22 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,13 @@ char	*ft_strjoin(char *s1, char *s2)
 		parse_index++;
 	}
 	parse_index = 0;
-	while (s2 && s2[parse_index])
+	while (s2 && s2[parse_index] && s2[parse_index] != '\n')
 	{
 		joined[i] = s2[parse_index];
 		i++;
 		parse_index++;
+		if (s2[parse_index] == '\n')
+			joined[i++] = '\n';
 	}
 	joined[i] = '\0';
 	free(s1);
@@ -90,6 +92,7 @@ int	find_eol(char *str, int len)
 	return (0);
 }
 
+//WHAT HAPPENS IF END OF FILE
 char	*store_next(char *buff)
 {
 	int		i;
@@ -98,7 +101,7 @@ char	*store_next(char *buff)
 
 	i = 0;
 	new_i = 0;
-	while (!find_eol(buff, ft_strlen(buff)))
+	while (buff[i] != '\n' && buff)
 		i++;
 	new_start = malloc(sizeof(char) * (ft_strlen(buff) - i) + 1);
 	if (!new_start)
@@ -113,7 +116,7 @@ char	*store_next(char *buff)
 	return (new_start);
 }
 
-char	*make_line(int fd, char *new_line, char *next_start)
+char	*make_line(int fd, char *new_line, char **next_start)
 {
 	int		status;
 	int		buff_len;
@@ -125,8 +128,8 @@ char	*make_line(int fd, char *new_line, char *next_start)
 		return (NULL);
 	if (next_start)
 	{
-		new_line = ft_strjoin(new_line, next_start);
-		free(next_start);
+		new_line = ft_strjoin(new_line, *next_start);
+		free(*next_start);
 	}
 	status = read(fd, buff, BUFFER_SIZE); 
 	if (status == -1)
@@ -146,13 +149,12 @@ char	*make_line(int fd, char *new_line, char *next_start)
 		}
 	}
 	new_line = ft_strjoin(new_line, buff);
-	next_start = store_next(buff);
+	*next_start = store_next(buff);
 	free(buff);
 	return (new_line);
 }
 
 //add read permissions safety (if (read(fd) < 0))
-// do a read(0) to check
 
 char	*get_next_line(int fd)
 {
@@ -167,7 +169,7 @@ char	*get_next_line(int fd)
 	new_line = NULL;
 	if (next_start != NULL)
 		new_line = ft_strjoin(new_line, next_start);
-	new_line = make_line(fd, new_line, next_start); 
+	new_line = make_line(fd, new_line, &next_start); 
 	if (!new_line)
 		return (NULL);
 	ft_putstr(new_line);
@@ -182,6 +184,7 @@ int	main(int argc, char *argv[])
 	int	fd;
 
 	fd = open(argv[1], O_RDONLY);
+	get_next_line(fd);
 	get_next_line(fd);
 	return 0;
 }
