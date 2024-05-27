@@ -6,7 +6,7 @@
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:12:35 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/27 17:09:42 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/27 18:36:05 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ int	ft_strlen(char *str)
 	i = 0;
 	if (!str)
 		return (0);
+	if (str[0] = '\0')
+		return (0);
 	while (str[i])
 		i++;
 	return (i);
@@ -81,7 +83,10 @@ char	*ft_strjoin(char *s1, char *s2)
 	parse_index = 0;
 	joined = ft_calloc(sizeof(char), ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!joined)
+	{
+		free(s2);
 		return (NULL);
+	}
 	while (s1 && s1[parse_index])
 	{
 		joined[i] = s1[parse_index];
@@ -112,21 +117,26 @@ char	*fetch_line(int fd, int buffer_size)
 		return (NULL);
 	read_buffer = ft_calloc(buffer_size, sizeof(char));
 	if (!read_buffer)
+	{
+		free(temp_buffer);
 		return (NULL);
+	}
+	read_buffer[0] = '\0';
 	while(!find_eol(temp_buffer))
 	{
 		status = read(fd, temp_buffer, buffer_size);
 		if (status == -1)
 		{
 			free(read_buffer);
+			free(temp_buffer);
 			return (NULL);
 		}
-
 		read_buffer = ft_strjoin(read_buffer, temp_buffer);
 		if (status == 0)
 			break;
 		ft_bzero(temp_buffer, buffer_size);
 	}
+	free(temp_buffer);
 	return (read_buffer);
 }
 
@@ -243,15 +253,39 @@ char	*get_next_line(int fd)
 	char		*read_buff;
 	static char	*leftovers;
 
-	if (!fd || BUFFER_SIZE <= 0)
+	if (fd == -1 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if(leftovers && check_last_line(leftovers))
-		return(last_line_dup(leftovers));
+	/*if(leftovers && check_last_line(leftovers))
+		return(last_line_dup(leftovers));*/
 	read_buff = fetch_line(fd, BUFFER_SIZE);
+	if (!read_buff)
+	{
+		if (leftovers)
+			free(leftovers);
+		return (NULL);
+	}
 	if (leftovers)
+	{
 		read_buff = ft_strjoin(leftovers, read_buff);
+		if (!read_buff)
+		{
+			free(leftovers);
+			return (NULL);
+		}
+	}
 	leftovers = get_leftovers(read_buff);
+	if (!leftovers)
+	{
+		free(read_buff);
+		return (NULL);
+	}
 	new_line = trim_buff(read_buff);
+	if (!new_line)
+	{
+		free(read_buff);
+		free(leftovers);
+		return (NULL);
+	}
 	return (new_line);	
 }
 

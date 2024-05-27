@@ -6,7 +6,7 @@
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:11:27 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/27 14:49:26 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/27 16:02:25 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef GET_NEXT_LINE_H
@@ -23,4 +23,6 @@ int		find_eol(char *str);
 int	get_buff_len(char *buff);
 void	*ft_calloc(size_t nmemb, size_t size);
 void	ft_bzero(void *s, size_t n);
+char	*last_line_dup(char *str);
+int	check_last_line(char *str);
 #endif
