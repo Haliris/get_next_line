@@ -6,7 +6,7 @@
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:12:35 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/27 15:06:57 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/27 15:39:57 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,6 @@ char	*ft_strjoin(char *s1, char *s2)
 
 	i = 0;
 	parse_index = 0;
-	if (!s2)
-		return (s1);
 	joined = ft_calloc(sizeof(char), ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!joined)
 		return (NULL);
@@ -91,7 +89,7 @@ char	*ft_strjoin(char *s1, char *s2)
 		parse_index++;
 	}
 	parse_index = 0;
-	while (s2 && s2[parse_index] && s2[parse_index] != '\n')
+	while (s2 && s2[parse_index])
 	{
 		joined[i] = s2[parse_index];
 		i++;
@@ -106,19 +104,27 @@ char	*fetch_line(int fd, int buffer_size)
 {
 	int	status;
 	char	*read_buffer;
-
+	char	*temp_buffer;
+	
 	status = 0;
+	temp_buffer = ft_calloc(buffer_size, sizeof(char));
+	if (!temp_buffer)
+		return (NULL);
 	read_buffer = ft_calloc(buffer_size, sizeof(char));
 	if (!read_buffer)
 		return (NULL);
-	while(!find_eol(read_buffer))
+	while(!find_eol(temp_buffer))
 	{
-		status = read(fd, read_buffer, buffer_size);
+		status = read(fd, temp_buffer, buffer_size);
 		if (status == -1)
 		{
 			free(read_buffer);
 			return (NULL);
 		}
+
+		read_buffer = ft_strjoin(read_buffer, temp_buffer);
+		if (status == 0)
+			break;
 	}
 	return (read_buffer);
 }
@@ -215,9 +221,11 @@ int	main(int argc, char *argv[])
 	int	fd;
 
 	fd = open(argv[1], O_RDONLY);
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
 	return 0;
 }
