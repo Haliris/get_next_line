@@ -6,7 +6,7 @@
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:12:35 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/26 21:14:43 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/27 15:06:57 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,54 +16,33 @@
 
 #include "get_next_line.h"
 
-void	ft_putchar(char c)
+void    ft_bzero(void *s, size_t n)
 {
-	write(1, &c, 1);
-}
-
-void	ft_putstr(char *str)
-{
-	int	i;
+	unsigned int    i;
+	unsigned char   *str;
 
 	i = 0;
-	while (str[i])
+	str = s;
+	while (i < n)
 	{
-		ft_putchar(str[i]);
+		str[i] = '\0';
 		i++;
 	}
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+void    *ft_calloc(size_t nmemb, size_t size)
 {
-	char	*joined;
-	int		i;
-	int		parse_index;
+	void    *ptr;
+	size_t  total_size;
 
-	i = 0;
-	parse_index = 0;
-	if (!s2)
-		return (s1);
-	joined = malloc (sizeof(char) * ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!joined)
+	total_size = size * nmemb;
+	if (total_size < size && total_size != 0)
 		return (NULL);
-	while (s1 && s1[parse_index])
-	{
-		joined[i] = s1[parse_index];
-		i++;
-		parse_index++;
-	}
-	parse_index = 0;
-	while (s2 && s2[parse_index] && s2[parse_index] != '\n')
-	{
-		joined[i] = s2[parse_index];
-		i++;
-		parse_index++;
-		if (s2[parse_index] == '\n')
-			joined[i++] = '\n';
-	}
-	joined[i] = '\0';
-	free(s1);
-	return (joined);
+	ptr = malloc(total_size);
+	if (!ptr)
+		return (NULL);
+	ft_bzero(ptr, nmemb);
+	return (ptr);
 }
 
 int	ft_strlen(char *str)
@@ -78,135 +57,157 @@ int	ft_strlen(char *str)
 	return (i);
 }
 
-int	find_eol(char *str, int len)
+int	find_eol(char *str)
 {
 	int	i;
 
 	i = 0;
-	while (i < len || str[i])
+	while (str[i])
 	{
-		if (str[i] == '\n' || str[i] == '\0')
+		if (str[i] == '\n')
 			return (1);
 		i++;
 	}
-	if (i != len)
-		return (1);
 	return (0);
 }
 
-//WHAT HAPPENS IF END OF FILE
-char	*store_next(char *buff)
+char	*ft_strjoin(char *s1, char *s2)
 {
+	char	*joined;
 	int		i;
-	int		new_i;
-	char	*new_start;
+	int		parse_index;
 
 	i = 0;
-	new_i = 0;
-	if (!buff)
+	parse_index = 0;
+	if (!s2)
+		return (s1);
+	joined = ft_calloc(sizeof(char), ft_strlen(s1) + ft_strlen(s2) + 1);
+	if (!joined)
 		return (NULL);
-	while (buff[i] != '\n' && buff[i])
-		i++;
-	new_start = malloc(sizeof(char) * (ft_strlen(buff) - i) + 1);
-	if (!new_start)
-		return 0; (NULL);
-	while (buff[i])
+	while (s1 && s1[parse_index])
 	{
-		new_start[new_i] = buff[i];
+		joined[i] = s1[parse_index];
 		i++;
-		new_i++;
+		parse_index++;
 	}
-	new_start[new_i] = '\0';
-	return (new_start);
+	parse_index = 0;
+	while (s2 && s2[parse_index] && s2[parse_index] != '\n')
+	{
+		joined[i] = s2[parse_index];
+		i++;
+		parse_index++;
+	}
+	joined[i] = '\0';
+	free(s1);
+	return (joined);
 }
 
-char	*join_offset(char *offset)
+char	*fetch_line(int fd, int buffer_size)
 {
-	int		i;
-	int		join_i;
-	char	*join_start;
-	
-	i = 1;
-	join_i = 0;
-	while (offset[i] != '\n' && offset[i])
-		i++;
-	join_start = malloc(sizeof(char) * (i - 1) + 1);
-	if (!join_start)
-		return (NULL);
-	i = 1;
-	while (offset[i] != '\n' && offset[i])
-	{
-		join_start[join_i] = offset[i];
-		join_i++;
-		i++;
-	}
-	if (offset[i] == '\n')
-		join_start[join_i++] = '\n';
-	join_start[join_i] = '\0';
-	return (join_start);
-}
-
-char	*make_line(int fd, char *new_line, char **next_start)
-{
-	int		status;
-	int		buff_len;
-	char	*buff;
+	int	status;
+	char	*read_buffer;
 
 	status = 0;
-	buff = malloc(sizeof(char) * BUFFER_SIZE + 1);
-	if (!buff)
+	read_buffer = ft_calloc(buffer_size, sizeof(char));
+	if (!read_buffer)
 		return (NULL);
-	status = read(fd, buff, BUFFER_SIZE); 
-	if (status == -1)
+	while(!find_eol(read_buffer))
 	{
-		free(buff);
-		return (NULL);
-	}
-	buff_len = ft_strlen(buff);
-	if(ft_strlen(new_line) > 0)
-	{
-		*next_start = store_next(buff);
-		free(buff);
-		return (new_line);
-	}
-	while (!find_eol(buff, BUFFER_SIZE))
-	{
-		new_line = ft_strjoin(new_line, buff);
-		status = read(fd, buff, BUFFER_SIZE);
-		if (status == -1) //fix safety
+		status = read(fd, read_buffer, buffer_size);
+		if (status == -1)
 		{
-			free(buff);
+			free(read_buffer);
 			return (NULL);
 		}
 	}
-	new_line = ft_strjoin(new_line, buff);
-	*next_start = store_next(buff);
-	free(buff);
-	return (new_line);
+	return (read_buffer);
 }
 
 //add read permissions safety (if (read(fd) < 0))
 
+char	*trim_buff(char *read_buff)
+{
+	int	i;
+	char	*trimmed_buff;
+
+	i = 0;
+	while (read_buff[i])
+	{
+		if (read_buff[i] == '\n')
+		{
+			i++;
+			break;
+		}
+		i++;
+	}
+	trimmed_buff = ft_calloc(i, sizeof(char));
+	if (!trimmed_buff)
+		return (NULL);
+	i = 0;
+	while (read_buff[i])
+	{
+		
+		trimmed_buff[i] = read_buff[i];
+		i++;
+		if (read_buff[i] == '\n')
+		{
+			trimmed_buff[i] = read_buff[i];
+			i++;
+			break;
+		}
+	}
+	trimmed_buff[i] = '\0';
+	free(read_buff);
+	return (trimmed_buff);
+}
+
+char	*get_leftovers(char *read_buff)
+{
+	int	i;
+	int	left_i;
+	char	*leftovers;
+
+	i = 0;
+	left_i = 0;
+	while (read_buff[i])
+	{
+		if (read_buff[i] == '\n')
+		{
+			i++;
+			break;
+		}
+		i++;
+	}
+	leftovers = ft_calloc(ft_strlen(read_buff) - i, sizeof(char));
+	if (!leftovers)
+		return (NULL);
+	while (read_buff[i])
+	{
+		leftovers[left_i] = read_buff[i];
+		left_i++;
+		i++;
+	}
+	leftovers[left_i] = '\0';
+	return (leftovers);
+}
 char	*get_next_line(int fd)
 {
 	char		*new_line;
-	static char	*next_start;
+	char		*read_buff;
+	static char	*leftovers;
 
 	if (!fd || BUFFER_SIZE <= 0)
 		return (NULL);
-	new_line = malloc(sizeof(char) * BUFFER_SIZE + 1);
-	if (!new_line)
-		return (NULL);
-	if (next_start != NULL)
-		new_line = join_offset(next_start);
-	new_line = make_line(fd, new_line, &next_start); 
-	if (!new_line)
-		return (NULL);
-	ft_putstr(new_line);
-	free(new_line);
+	read_buff = fetch_line(fd, BUFFER_SIZE);
+	if (leftovers)
+		read_buff = ft_strjoin(leftovers, read_buff);
+	leftovers = get_leftovers(read_buff);
+	new_line = trim_buff(read_buff);
+	return (new_line);	
 }
 
 #include <fcntl.h>
+#include <stdio.h>
 
 int	main(int argc, char *argv[])
 {
@@ -214,9 +215,9 @@ int	main(int argc, char *argv[])
 	int	fd;
 
 	fd = open(argv[1], O_RDONLY);
-	get_next_line(fd);
-	get_next_line(fd);
-	get_next_line(fd);
-	get_next_line(fd);
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
 	return 0;
 }
