@@ -6,7 +6,7 @@
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:12:35 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/27 18:36:05 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/28 11:29:32 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,6 @@ int	ft_strlen(char *str)
 	i = 0;
 	if (!str)
 		return (0);
-	if (str[0] = '\0')
-		return (0);
 	while (str[i])
 		i++;
 	return (i);
@@ -81,20 +79,20 @@ char	*ft_strjoin(char *s1, char *s2)
 
 	i = 0;
 	parse_index = 0;
-	joined = ft_calloc(sizeof(char), ft_strlen(s1) + ft_strlen(s2) + 1);
+	joined = ft_calloc((ft_strlen(s1) + ft_strlen(s2) + 1), sizeof(char));
 	if (!joined)
 	{
-		free(s2);
+		free(s1);
 		return (NULL);
 	}
-	while (s1 && s1[parse_index])
+	while (s1[parse_index])
 	{
 		joined[i] = s1[parse_index];
 		i++;
 		parse_index++;
 	}
 	parse_index = 0;
-	while (s2 && s2[parse_index])
+	while (s2[parse_index])
 	{
 		joined[i] = s2[parse_index];
 		i++;
@@ -112,16 +110,15 @@ char	*fetch_line(int fd, int buffer_size)
 	char	*temp_buffer;
 	
 	status = 0;
-	temp_buffer = ft_calloc(buffer_size, sizeof(char));
+	temp_buffer = ft_calloc(buffer_size + 1, sizeof(char));
 	if (!temp_buffer)
 		return (NULL);
-	read_buffer = ft_calloc(buffer_size, sizeof(char));
+	read_buffer = ft_calloc(buffer_size + 1, sizeof(char));
 	if (!read_buffer)
 	{
 		free(temp_buffer);
 		return (NULL);
 	}
-	read_buffer[0] = '\0';
 	while(!find_eol(temp_buffer))
 	{
 		status = read(fd, temp_buffer, buffer_size);
@@ -157,7 +154,7 @@ char	*trim_buff(char *read_buff)
 		}
 		i++;
 	}
-	trimmed_buff = ft_calloc(i, sizeof(char));
+	trimmed_buff = ft_calloc(i + 1, sizeof(char));
 	if (!trimmed_buff)
 		return (NULL);
 	i = 0;
@@ -195,7 +192,7 @@ char	*get_leftovers(char *read_buff)
 		}
 		i++;
 	}
-	leftovers = ft_calloc(ft_strlen(read_buff) - i, sizeof(char));
+	leftovers = ft_calloc(ft_strlen(read_buff) - i + 1, sizeof(char));
 	if (!leftovers)
 		return (NULL);
 	while (read_buff[i])
