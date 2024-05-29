@@ -6,7 +6,7 @@
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:12:35 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/29 11:39:03 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/29 13:03:42 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,9 +119,18 @@ char	*fetch_line(char *stash, int fd)
 	while (status == 1)
 	{
 		status = read(fd, read_buff, BUFFER_SIZE);
+		if (status == 0)
+		{
+			free(read_buff);
+			if (ft_strlen(stash) != 0)
+				return(stash);
+			free(stash);
+			return (NULL);
+		}
 		if (status == -1)
 		{
 			free(read_buff);
+			free(stash);
 			return (NULL);
 		}
 		stash = ft_str_rejoin(stash, read_buff);
@@ -130,7 +139,7 @@ char	*fetch_line(char *stash, int fd)
 			free(read_buff);
 			return (NULL);
 		}
-		if (status == 0 || find_eol(read_buff))
+		if (find_eol(read_buff))
 			break;
 		ft_bzero(read_buff, BUFFER_SIZE + 1);
 	}
@@ -155,6 +164,8 @@ char	*get_leftovers(char *line)
 		}
 		i++;
 	}
+	if (ft_strlen(line) - i == 0)
+		return (NULL);
 	leftovers = ft_calloc((ft_strlen(line) - i + 1), sizeof(char));
 	if (!leftovers)
 		return (NULL);
@@ -243,7 +254,7 @@ char	*get_next_line(int fd)
 	}
 	return (line);
 }
-
+/*
 #include <fcntl.h>
 #include <stdio.h>
 
@@ -261,4 +272,4 @@ int	main(int main, char *argv[])
 	free(line);
 	free(line2);
 	return (0);
-}
+}*/
