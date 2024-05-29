@@ -6,7 +6,7 @@
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:12:35 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/29 13:03:42 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/29 13:08:46 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ char	*fetch_line(char *stash, int fd)
 		free(stash);
 		return (NULL);
 	}
-	while (status == 1)
+	while (status > 0)
 	{
 		status = read(fd, read_buff, BUFFER_SIZE);
 		if (status == 0)
