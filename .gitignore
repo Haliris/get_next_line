@@ -6,7 +6,7 @@
 #    By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/25 14:08:18 by jteissie          #+#    #+#              #
-#    Updated: 2024/05/29 13:20:35 by jteissie         ###   ########.fr        #
+#    Updated: 2024/05/29 13:21:44 by jteissie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,3 +16,4 @@ test*
 *.txt
 *.vscode
 vscode/*
+gnlTester/*
