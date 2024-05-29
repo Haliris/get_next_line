@@ -26,8 +26,8 @@ int	ft_strlen(char *str)
 
 void	ft_bzero(void *s, size_t n)
 {
-	unsigned int    i;
-	unsigned char   *str;
+	unsigned int	i;
+	unsigned char	*str;
 
 	i = 0;
 	str = s;
@@ -38,10 +38,33 @@ void	ft_bzero(void *s, size_t n)
 	}
 }
 
+void	copy_and_cat(char *out, char *cpy_src, char *cat_src)
+{
+	int	i;
+	int	src_i;
+
+	i = 0;
+	src_i = 0;
+	while (cpy_src[src_i])
+	{
+		out[i] = cpy_src[src_i];
+		i++;
+		src_i++;
+	}
+	src_i = 0;
+	while (cat_src[src_i])
+	{
+		out[i] = cat_src[src_i];
+		src_i++;
+		i++;
+	}
+	out[i] = '\0';
+}
+
 void	*ft_calloc(size_t nmemb, size_t size)
 {
-	void    *ptr;
-	size_t  total_size;
+	void	*ptr;
+	size_t	total_size;
 
 	total_size = size * nmemb;
 	if (total_size < size && total_size != 0)

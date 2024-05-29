@@ -13,16 +13,18 @@
 # define GET_NEXT_LINE_H
 # include <unistd.h>
 # include <stdlib.h>
+
 char	*get_next_line(int fd);
-char	*fetch_line(char *stash, int fd);
+char	*fetch_line(char *stash, int fd, int *status);
 char	*trim_buff(char *read_buff);
-char	*get_leftovers(char *line);
+void	get_leftovers(char *leftovers, char *line);
 char	*ft_str_rejoin(char *stash, char *append);
 int		ft_strlen(char *str);
 int		find_eol(char *str);
-int	get_buff_len(char *buff);
+int		get_buff_len(char *buff);
 void	*ft_calloc(size_t nmemb, size_t size);
 void	ft_bzero(void *s, size_t n);
 char	*last_line_dup(char *str);
-int	check_last_line(char *str);
+int		check_last_line(char *str);
+void	copy_and_cat(char *out, char *cpy_src, char *cat_src);
 #endif
