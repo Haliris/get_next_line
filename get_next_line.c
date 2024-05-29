@@ -11,6 +11,9 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 1
+#endif
 
 char	*ft_str_rejoin(char *stash, char *add)
 {
@@ -20,13 +23,9 @@ char	*ft_str_rejoin(char *stash, char *add)
 		return (NULL);
 	joined = ft_calloc((ft_strlen(stash) + ft_strlen(add) + 1), sizeof(char));
 	if (!joined)
-	{
-		free(stash);
-		return (NULL);
-	}
+		return (free(stash), NULL);
 	copy_and_cat(joined, stash, add);
-	free(stash);
-	return (joined);
+	return (free(stash), joined);
 }
 
 char	*fetch_line(char *stash, int fd, int *status)
@@ -37,10 +36,7 @@ char	*fetch_line(char *stash, int fd, int *status)
 		return (NULL);
 	read_buff = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	if (!read_buff)
-	{
-		free(stash);
-		return (NULL);
-	}
+		return (free(stash), NULL);
 	while (!find_eol(read_buff))
 	{
 		*status = read(fd, read_buff, BUFFER_SIZE);
@@ -49,13 +45,11 @@ char	*fetch_line(char *stash, int fd, int *status)
 			free(read_buff);
 			if (ft_strlen(stash) != 0)
 				return (stash);
-			free(stash);
-			return (NULL);
+			return (free(stash), NULL);
 		}
 		stash = ft_str_rejoin(stash, read_buff);
 	}
-	free(read_buff);
-	return (stash);
+	return (free(read_buff), stash);
 }
 
 void	get_leftovers(char *leftovers, char *line)
@@ -98,10 +92,7 @@ char	*trim_line(char	*untrimmed)
 		i++;
 	trimmed = ft_calloc(i + 1, sizeof(char));
 	if (!trimmed)
-	{
-		free(untrimmed);
-		return (NULL);
-	}
+		return (free(untrimmed), NULL);
 	i = 0;
 	while (untrimmed[i])
 	{
@@ -109,8 +100,7 @@ char	*trim_line(char	*untrimmed)
 		i++;
 	}
 	trimmed[i] = '\0';
-	free(untrimmed);
-	return (trimmed);
+	return (free(untrimmed), trimmed);
 }
 
 char	*get_next_line(int fd)
@@ -129,8 +119,7 @@ char	*get_next_line(int fd)
 	if (status == -1)
 	{
 		ft_bzero(leftovers, BUFFER_SIZE + 1);
-		free(line);
-		return (NULL);
+		return (free(line), NULL);
 	}
 	get_leftovers(leftovers, line);
 	line = trim_line(line);
@@ -141,19 +130,26 @@ char	*get_next_line(int fd)
 /*
 #include <fcntl.h>
 #include <stdio.h>
+#include <sys/resource.h>
+
 
 int	main(int main, char *argv[])
 {
 	int	fd;
 	char	*line;
 	char	*line2;
+	char	*line3;
 
 	fd = open(argv[1], O_RDONLY);
 	line = get_next_line(fd);
 	line2 = get_next_line(fd);
+	line3 = get_next_line(fd);
 	printf("%s", line);
 	printf("%s", line2);
+	printf("%s", line3);
 	free(line);
 	free(line2);
+	free(line3);
 	return (0);
 }*/
+#undef BUFFER_SIZE

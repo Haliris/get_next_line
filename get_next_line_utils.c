@@ -32,10 +32,7 @@ void	ft_bzero(void *s, size_t n)
 	i = 0;
 	str = s;
 	while (i < n)
-	{
-		str[i] = '\0';
-		i++;
-	}
+		str[i++] = '\0';
 }
 
 void	copy_and_cat(char *out, char *cpy_src, char *cat_src)
@@ -53,11 +50,7 @@ void	copy_and_cat(char *out, char *cpy_src, char *cat_src)
 	}
 	src_i = 0;
 	while (cat_src[src_i])
-	{
-		out[i] = cat_src[src_i];
-		src_i++;
-		i++;
-	}
+		out[i++] = cat_src[src_i++];
 	out[i] = '\0';
 }
 
