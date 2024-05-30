@@ -6,14 +6,11 @@
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:12:35 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/29 13:16:26 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/30 12:53:52 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#ifndef BUFFER_SIZE
-# define BUFFER_SIZE 1
-#endif
 
 char	*ft_str_rejoin(char *stash, char *add)
 {
@@ -52,13 +49,13 @@ char	*fetch_line(char *stash, int fd, int *status)
 	return (free(read_buff), stash);
 }
 
-void	get_leftovers(char *leftovers, char *line)
+void	get_stash(char *stash, char *line)
 {
 	int	i;
-	int	left_i;
+	int	stash_i;
 
 	i = 0;
-	left_i = 0;
+	stash_i = 0;
 	if (!line)
 		return ;
 	while (line[i])
@@ -71,13 +68,13 @@ void	get_leftovers(char *leftovers, char *line)
 		i++;
 	}
 	while (line[i])
-	{
-		leftovers[left_i] = line[i];
+	{	
+		stash[stash_i] = line[i];
 		line[i] = '\0';
-		left_i++;
+		stash_i++;
 		i++;
 	}
-	leftovers[left_i] = '\0';
+	stash[stash_i] = '\0';
 }
 
 char	*trim_line(char	*untrimmed)
@@ -105,7 +102,7 @@ char	*trim_line(char	*untrimmed)
 
 char	*get_next_line(int fd)
 {
-	static char	leftovers[BUFFER_SIZE + 1];
+	static char	stash[BUFFER_SIZE + 1];
 	char		*line;
 	int			status;
 
@@ -113,15 +110,15 @@ char	*get_next_line(int fd)
 	if (fd == -1 || BUFFER_SIZE <= 0)
 		return (NULL);
 	line = ft_calloc(1, sizeof(char));
-	if (ft_strlen(leftovers))
-		line = ft_str_rejoin(line, leftovers);
+	if (ft_strlen(stash))
+		line = ft_str_rejoin(line, stash);
 	line = fetch_line(line, fd, &status);
 	if (status == -1)
 	{
-		ft_bzero(leftovers, BUFFER_SIZE + 1);
+		ft_bzero(stash, BUFFER_SIZE + 1);
 		return (free(line), NULL);
 	}
-	get_leftovers(leftovers, line);
+	get_stash(stash, line);
 	line = trim_line(line);
 	if (!line)
 		return (NULL);
@@ -130,26 +127,17 @@ char	*get_next_line(int fd)
 /*
 #include <fcntl.h>
 #include <stdio.h>
-#include <sys/resource.h>
 
-
-int	main(int main, char *argv[])
+int	main(int argc, char *argv[])
 {
 	int	fd;
 	char	*line;
-	char	*line2;
-	char	*line3;
-
+	(void)argc;
+		
 	fd = open(argv[1], O_RDONLY);
 	line = get_next_line(fd);
-	line2 = get_next_line(fd);
-	line3 = get_next_line(fd);
 	printf("%s", line);
-	printf("%s", line2);
-	printf("%s", line3);
 	free(line);
-	free(line2);
-	free(line3);
+	close(fd);
 	return (0);
 }*/
-#undef BUFFER_SIZE
