@@ -6,7 +6,7 @@
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:12:35 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/30 12:53:52 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/30 20:58:19 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ char	*fetch_line(char *stash, int fd, int *status)
 	read_buff = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	if (!read_buff)
 		return (free(stash), NULL);
-	while (!find_eol(read_buff))
+	while (!find_eol(stash))
 	{
 		*status = read(fd, read_buff, BUFFER_SIZE);
 		if (*status <= 0)
@@ -45,6 +45,7 @@ char	*fetch_line(char *stash, int fd, int *status)
 			return (free(stash), NULL);
 		}
 		stash = ft_str_rejoin(stash, read_buff);
+		ft_bzero(read_buff, BUFFER_SIZE + 1);
 	}
 	return (free(read_buff), stash);
 }
@@ -68,7 +69,7 @@ void	get_stash(char *stash, char *line)
 		i++;
 	}
 	while (line[i])
-	{	
+	{
 		stash[stash_i] = line[i];
 		line[i] = '\0';
 		stash_i++;
@@ -136,8 +137,12 @@ int	main(int argc, char *argv[])
 		
 	fd = open(argv[1], O_RDONLY);
 	line = get_next_line(fd);
-	printf("%s", line);
-	free(line);
+	while (line)
+	{
+		printf("%s", line);
+		free(line);
+		line = get_next_line(fd);
+	}
 	close(fd);
 	return (0);
 }*/
