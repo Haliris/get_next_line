@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jteissie <jteissie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 14:12:35 by jteissie          #+#    #+#             */
-/*   Updated: 2024/05/31 13:46:19 by jteissie         ###   ########.fr       */
+/*   Updated: 2024/05/31 13:46:35 by jteissie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_str_rejoin(char *stash, char *add)
 {
@@ -103,7 +103,7 @@ char	*trim_line(char	*untrimmed)
 
 char	*get_next_line(int fd)
 {
-	static char	stash[BUFFER_SIZE + 1];
+	static char	stash[1024][BUFFER_SIZE + 1];
 	char		*line;
 	int			status;
 
@@ -111,38 +111,54 @@ char	*get_next_line(int fd)
 	if (fd == -1 || BUFFER_SIZE <= 0)
 		return (NULL);
 	line = ft_calloc(1, sizeof(char));
-	if (ft_strlen(stash))
-		line = ft_str_rejoin(line, stash);
+	if (ft_strlen(stash[fd]))
+		line = ft_str_rejoin(line, stash[fd]);
 	line = fetch_line(line, fd, &status);
 	if (status == -1)
 	{
-		ft_bzero(stash, BUFFER_SIZE + 1);
+		ft_bzero(stash[fd], BUFFER_SIZE + 1);
 		return (free(line), NULL);
 	}
-	get_stash(stash, line);
+	get_stash(stash[fd], line);
 	line = trim_line(line);
 	if (!line)
 		return (NULL);
 	return (line);
 }
-/*
-#include <fcntl.h>
-#include <stdio.h>
 
-int	main(int argc, char *argv[])
-{
-	int	fd;
-	char	*line;
-	(void)argc;
+// #include <fcntl.h>
+// #include <stdio.h>
 
-	fd = open(argv[1], O_RDONLY);
-	line = get_next_line(fd);
-	while (line)
-	{
-		printf("%s", line);
-		free(line);
-		line = get_next_line(fd);
-	}
-	close(fd);
-	return (0);
-}*/
+// int	main(int argc, char *argv[])
+// {
+// 	int	fd;
+// 	int	fd2;
+// 	int	fd3;
+// 	char	*line;
+// 	char	*line2;
+// 	char	*line3;
+// 	(void)argc;
+
+// 	fd = open(argv[1], O_RDONLY);
+// 	fd2 = open(argv[2], O_RDONLY);
+// 	fd3 = open(argv[3], O_RDONLY);
+// 	line = get_next_line(fd);
+// 	line2 = get_next_line(fd2);
+// 	line3 = get_next_line(fd3);
+// 	while (line && line2 && line3)
+// 	{
+// 		printf("%s", line);
+// 		printf("%s", line2);
+// 		printf("%s", line3);
+// 		free(line);
+// 		line = get_next_line(fd);
+// 		free(line2);
+// 		line2 = get_next_line(fd2);
+// 		free(line3);
+// 		line3 = get_next_line(fd3);
+// 	}
+// 	free(line);
+// 	free(line2);
+// 	close(fd);
+// 	return (0);
+// }
