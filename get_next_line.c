@@ -37,6 +37,7 @@ char	*fetch_line(char *line_stash, int fd, int *status)
 	while (!find_eol(line_stash))
 	{
 		*status = read(fd, read_buff, BUFFER_SIZE);
+		read_buff[status] = '\0';
 		if (*status <= 0)
 		{
 			free(read_buff);
